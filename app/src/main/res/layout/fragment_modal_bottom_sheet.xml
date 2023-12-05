@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Title for the Bottom Sheet -->
+    <TextView
+        android:id="@+id/textViewTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Voice Command Response"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:gravity="center"
+        android:padding="8dp"/>
+
+    <!-- Some text to display in the Bottom Sheet -->
+    <TextView
+        android:id="@+id/textViewContent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="The voice command 'Hi' was recognized."
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:padding="8dp"/>
+
+    <!-- A Button to close the Bottom Sheet -->
+    <Button
+        android:id="@+id/buttonRecord"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Record New Command"
+        android:onClick="recordNewCommand"/>
+    <Button
+        android:id="@+id/buttonClose"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Close"
+        android:onClick="closeBottomSheet"/>
+
+</LinearLayout>

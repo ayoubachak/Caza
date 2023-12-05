@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Caza</string>
+    <string name="record_voice">record</string>
 </resources>
