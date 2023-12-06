@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Caza</string>
     <string name="record_voice">record</string>
+    <string name="send_message">Send</string>
 </resources>

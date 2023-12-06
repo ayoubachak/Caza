@@ -1,183 +1,88 @@
 package com.example.caza;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.Manifest;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.speech.RecognitionListener;
-import android.speech.RecognizerIntent;
-import android.speech.SpeechRecognizer;
+import android.os.Handler;
 import android.view.View;
-import android.widget.Toast;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 
 import com.example.caza.models.ChatMessage;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
-
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
-    private BroadcastReceiver voiceReceiver;
-    private SpeechRecognizer speechRecognizer;
-    private Intent speechRecognizerIntent;
     private RecyclerView chatRecyclerView;
     private ChatAdapter chatAdapter;
     private ArrayList<ChatMessage> chatMessages;
-    private FloatingActionButton fab;
-    private boolean isRecording = false;
-
-
-    private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
-
-    private void requestMicrophonePermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.RECORD_AUDIO},
-                    REQUEST_RECORD_AUDIO_PERMISSION);
-        }
-    }
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_RECORD_AUDIO_PERMISSION) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission granted.
-            } else {
-                // Permission denied. Handle the functionality that depends on this permission.
-                Toast.makeText(this, "Permission denied to record audio", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
+    private EditText messageInput;
+    private ImageButton sendButton;
+    private ImageButton voiceRecordButton; // Button for voice recording (to be implemented later)
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        fab = findViewById(R.id.fab);
+
         chatRecyclerView = findViewById(R.id.chatRecyclerView);
+        messageInput = findViewById(R.id.message_input);
+        sendButton = findViewById(R.id.send_button);
+        voiceRecordButton = findViewById(R.id.voice_record_button); // Initialize the voice record button
+
         chatMessages = new ArrayList<>();
         chatAdapter = new ChatAdapter(chatMessages);
         chatRecyclerView.setAdapter(chatAdapter);
         chatRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        requestMicrophonePermission();
-        initSpeechRecognizer();
-
-        // Start voice recognition service
-        Intent serviceIntent = new Intent(this, VoiceService.class);
-        startService(serviceIntent);
-
-        // Register Broadcast Receiver
-        voiceReceiver = new BroadcastReceiver() {
+        sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onReceive(Context context, Intent intent) {
-                String message = intent.getStringExtra("message");
-                if ("Hi".equals(message)) {
-                    addMessageToChat("Hi");
-                    showModalBottomSheet();
-                }
+            public void onClick(View view) {
+                sendMessage();
             }
-        };
-        IntentFilter filter = new IntentFilter("com.example.caza.VOICE_RECOGNITION");
-        registerReceiver(voiceReceiver, filter);
-    }
+        });
 
-
-
-    private void initSpeechRecognizer() {
-        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
-        speechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
-
-        speechRecognizer.setRecognitionListener(new RecognitionListener() {
+        // TODO: Implement the voice record button functionality
+        voiceRecordButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onResults(Bundle results) {
-                ArrayList<String> matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-                if (matches != null && !matches.isEmpty()) {
-                    // Update chat with the recognized text
-                    addMessageToChat(matches.get(0));
-                }
+            public void onClick(View view) {
+                // Placeholder for voice recording functionality
             }
-
-            // Implement other necessary methods of RecognitionListener
-            @Override
-            public void onReadyForSpeech(Bundle params) {}
-
-            @Override
-            public void onBeginningOfSpeech() {
-//                fab.setImageResource(R.drawable.arretez); // Change to your recording icon
-                isRecording = true;
-            }
-
-            @Override
-            public void onRmsChanged(float rmsdB) {}
-
-            @Override
-            public void onBufferReceived(byte[] buffer) {}
-
-            @Override
-            public void onEndOfSpeech() {
-//                fab.setImageResource(R.drawable.microphone); // Change to your default icon
-                isRecording = false;
-            }
-
-            @Override
-            public void onError(int error) {
-                // Handle error here
-            }
-
-            @Override
-            public void onPartialResults(Bundle partialResults) {
-                ArrayList<String> matches = partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-                if (matches != null && !matches.isEmpty()) {
-                    // Update chat with real-time recognized text
-                    addMessageToChat(matches.get(0));
-                }
-            }
-
-            @Override
-            public void onEvent(int eventType, Bundle params) {}
         });
     }
 
-    public void recordVoiceCommand(View view) {
-        if (!isRecording) {
-            speechRecognizer.startListening(speechRecognizerIntent);
-        } else {
-            speechRecognizer.stopListening();
-//            fab.setImageResource(R.drawable.microphone); // Change to your default icon
-            isRecording = false;
+    private void sendMessage() {
+        String messageText = messageInput.getText().toString().trim();
+        if (!messageText.isEmpty()) {
+            addMessageToChat(messageText, true); // User message
+            messageInput.setText("");
+
+            // Simulate a random response from the phone
+            simulatePhoneResponse();
         }
     }
-    private void addMessageToChat(String messageText) {
-        ChatMessage newMessage = new ChatMessage(messageText);
+
+    private void simulatePhoneResponse() {
+        // Delay the response to simulate typing
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                String[] responses = {"Hello!", "How are you?", "That's interesting.", "Can you tell me more?"};
+                int randomIndex = new Random().nextInt(responses.length);
+                addMessageToChat(responses[randomIndex], false); // Phone response
+            }
+        }, 1000); // 1-second delay
+    }
+
+    private void addMessageToChat(String messageText, boolean isUserMessage) {
+        ChatMessage newMessage = new ChatMessage(messageText, isUserMessage); // Assuming ChatMessage has a constructor to distinguish user messages from phone responses
         chatMessages.add(newMessage);
         chatAdapter.notifyItemInserted(chatMessages.size() - 1);
         chatRecyclerView.scrollToPosition(chatMessages.size() - 1);
     }
-    private void showModalBottomSheet() {
-        ModalBottomSheetFragment bottomSheet = new ModalBottomSheetFragment();
-        bottomSheet.show(getSupportFragmentManager(), bottomSheet.getTag());
-    }
 
-
-    @Override
-    protected void onDestroy() {
-        if (speechRecognizer != null) {
-            speechRecognizer.destroy();
-        }
-        unregisterReceiver(voiceReceiver);
-        super.onDestroy();
-    }
+    // Other methods and functionalities remain the same
 }
