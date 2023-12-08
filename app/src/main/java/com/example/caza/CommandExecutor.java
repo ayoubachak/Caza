@@ -2,6 +2,7 @@ package com.example.caza;
 
 import android.app.Activity;
 
+import com.example.caza.callbacks.GPSResultCallback;
 import com.example.caza.handlers.CommandHandler;
 import com.example.caza.handlers.EchoCommandHandler;
 import com.example.caza.handlers.GPSCommandHandler;
@@ -14,11 +15,11 @@ import java.util.Map;
 public class CommandExecutor {
     private Map<String, CommandHandler> commandMap;
 
-    public CommandExecutor() {
+    public CommandExecutor(Activity activity) {
         commandMap = new HashMap<>();
         commandMap.put("/sms", new SMSCommandHandler());
         commandMap.put("/temperature", new TemperatureCommandHandler());
-        commandMap.put("/gps", new GPSCommandHandler());
+        commandMap.put("/gps", new GPSCommandHandler((GPSResultCallback) activity));
         commandMap.put("/echo", new EchoCommandHandler());
     }
 
@@ -28,7 +29,10 @@ public class CommandExecutor {
         String[] args = parts.length > 1 ? parts[1].split(" ") : new String[0];
 
         CommandHandler handler = commandMap.get(command);
-        if (handler != null) {
+        if (handler instanceof GPSCommandHandler) {
+            // Special handling for GPSCommandHandler to pass the callback
+            return ((GPSCommandHandler) handler).execute(args, (MainActivity) activity);
+        } else if (handler != null) {
             return handler.execute(args, activity);
         } else {
             return "Unknown command";

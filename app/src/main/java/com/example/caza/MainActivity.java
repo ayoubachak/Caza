@@ -14,12 +14,14 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.example.caza.callbacks.GPSResultCallback;
+import com.example.caza.handlers.GPSCommandHandler;
 import com.example.caza.models.ChatMessage;
 
 import java.util.ArrayList;
 import java.util.Random;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements GPSResultCallback {
 
 
 
@@ -29,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText messageInput;
     private ImageButton sendButton;
     private ImageButton voiceRecordButton; // Button for voice recording (to be implemented later)
-    public static CommandExecutor executor = new CommandExecutor();
+    public CommandExecutor executor = new CommandExecutor(this);
     public static final int SMS_REQUEST_CODE = 101;
     public static final int GPS_REQUEST_CODE = 102;
 
@@ -90,7 +92,6 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "SMS permission denied", Toast.LENGTH_SHORT).show();
             }
         }
-
         // Handle permission result for different commands
     }
 
@@ -111,6 +112,11 @@ public class MainActivity extends AppCompatActivity {
         chatMessages.add(newMessage);
         chatAdapter.notifyItemInserted(chatMessages.size() - 1);
         chatRecyclerView.scrollToPosition(chatMessages.size() - 1);
+    }
+
+    @Override
+    public void onGPSResult(String gpsData) {
+        addMessageToChat(gpsData, false);
     }
 
     // Other methods and functionalities remain the same
