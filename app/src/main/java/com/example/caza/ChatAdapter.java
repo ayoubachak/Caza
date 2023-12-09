@@ -1,14 +1,17 @@
 package com.example.caza;
 
+import android.media.MediaPlayer;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.caza.models.ChatMessage;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder> {
@@ -20,6 +23,17 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
 
     public ChatAdapter(ArrayList<ChatMessage> chatMessages) {
         this.chatMessages = chatMessages;
+    }
+
+    static class ChatViewHolder extends RecyclerView.ViewHolder {
+        TextView messageText;
+        ImageButton playButton; // Add a play button in your item layout
+
+        public ChatViewHolder(@NonNull View itemView) {
+            super(itemView);
+            messageText = itemView.findViewById(R.id.message_text);
+            playButton = itemView.findViewById(R.id.play_audio_button); // Assume you have a play button in your item layout
+        }
     }
 
     @NonNull
@@ -38,9 +52,18 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
     @Override
     public void onBindViewHolder(@NonNull ChatViewHolder holder, int position) {
         ChatMessage message = chatMessages.get(position);
-        holder.messageText.setText(message.getText());
-        // Additional styling can be done here based on the message type
+        if (message.isAudioMessage()) {
+            // Set up the UI for an audio message
+            holder.playButton.setVisibility(View.VISIBLE);
+            holder.playButton.setOnClickListener(v -> playAudio(message.getText()));
+            holder.messageText.setText("Audio Message"); // Or any other placeholder text
+        } else {
+            // Setup for a regular text message
+            holder.messageText.setText(message.getText());
+            holder.playButton.setVisibility(View.GONE);
+        }
     }
+
 
     @Override
     public int getItemViewType(int position) {
@@ -58,12 +81,16 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
         return chatMessages.size();
     }
 
-    static class ChatViewHolder extends RecyclerView.ViewHolder {
-        TextView messageText;
 
-        public ChatViewHolder(@NonNull View itemView) {
-            super(itemView);
-            messageText = itemView.findViewById(R.id.message_text);
+    private void playAudio(String audioFilePath) {
+        MediaPlayer mediaPlayer = new MediaPlayer();
+        try {
+            mediaPlayer.setDataSource(audioFilePath);
+            mediaPlayer.prepare();
+            mediaPlayer.start();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
+
