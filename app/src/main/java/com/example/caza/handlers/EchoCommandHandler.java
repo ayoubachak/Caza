@@ -9,4 +9,11 @@ public class EchoCommandHandler implements CommandHandler {
         String response = String.join(" ", args);
         return "Echo: " + response;
     }
+
+    @Override
+    public String help() {
+        return "/echo <message> :\n"
+                + "Repeats back the <message> provided as argument.\n"
+                + "Usage example: '/echo Hello World' will result in 'Echo: Hello World'.";
+    }
 }

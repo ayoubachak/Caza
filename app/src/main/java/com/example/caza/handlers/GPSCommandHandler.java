@@ -39,6 +39,14 @@ public class GPSCommandHandler implements CommandHandler, LocationListener {
     }
 
     @Override
+    public String help() {
+        return "/gps :\n"
+                + "Fetches the current GPS coordinates of the device.\n"
+                + "No additional arguments required.\n"
+                + "Requires GPS permission to function.";
+    }
+
+    @Override
     public void onLocationChanged(Location location) {
         String gpsData = "Latitude: " + location.getLatitude() + ", Longitude: " + location.getLongitude();
         callback.onGPSResult(gpsData);

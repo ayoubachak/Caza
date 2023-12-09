@@ -15,13 +15,14 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.example.caza.callbacks.GPSResultCallback;
+import com.example.caza.callbacks.TemperatureResultCallback;
 import com.example.caza.handlers.GPSCommandHandler;
 import com.example.caza.models.ChatMessage;
 
 import java.util.ArrayList;
 import java.util.Random;
 
-public class MainActivity extends AppCompatActivity implements GPSResultCallback {
+public class MainActivity extends AppCompatActivity implements GPSResultCallback, TemperatureResultCallback {
 
 
 
@@ -119,5 +120,9 @@ public class MainActivity extends AppCompatActivity implements GPSResultCallback
         addMessageToChat(gpsData, false);
     }
 
-    // Other methods and functionalities remain the same
+    @Override
+    public void onTemperatureResult(String temperatureData) {
+        addMessageToChat(temperatureData, false);
+    }
+
 }
