@@ -17,4 +17,7 @@ public interface MessageDao {
 
     @Delete
     void delete(Message message);
+
+    @Query("SELECT * FROM message WHERE id = :messageId")
+    Message getMessageById(int messageId);
 }

@@ -4,10 +4,15 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import com.example.caza.dao.MessageDao;
+import com.example.caza.dao.RecordingDao;
+
 @Entity(tableName = "data_collection_item")
 public class DataCollectionItem {
     private Recording recording;
     private Message message;
+    private transient MessageDao messageDao;
+    private transient RecordingDao recordingDao;
 
     @PrimaryKey(autoGenerate = true)
     public int id;
@@ -20,6 +25,12 @@ public class DataCollectionItem {
 
     // Constructor, getters and setters...
 
+    public void setMessageDao(MessageDao messageDao) {
+        this.messageDao = messageDao;
+    }
+    public void setRecordingDao(RecordingDao recordingDao) {
+        this.recordingDao = recordingDao;
+    }
     public Recording getRecording() {
         return recording;
     }
@@ -29,6 +40,9 @@ public class DataCollectionItem {
     }
 
     public Message getMessage() {
+        if (message == null && messageDao != null) {
+            message = messageDao.getMessageById(messageId);
+        }
         return message;
     }
 

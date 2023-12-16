@@ -1,5 +1,6 @@
 package com.example.caza.data_collection;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,14 +10,18 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.caza.R;
+import com.example.caza.dao.MessageDao;
+import com.example.caza.dao.RecordingDao;
 import com.example.caza.entities.DataCollectionItem;
+import com.example.caza.entities.Message;
 
 import java.util.List;
 
 public class RecordingsAdapter extends RecyclerView.Adapter<RecordingsAdapter.ViewHolder> {
+
     private List<DataCollectionItem> dataCollectionItems;
 
-    public RecordingsAdapter(List<DataCollectionItem> dataCollectionItems) {
+    public RecordingsAdapter(List<DataCollectionItem> dataCollectionItems ) {
         this.dataCollectionItems = dataCollectionItems;
     }
 
@@ -51,10 +56,14 @@ public class RecordingsAdapter extends RecyclerView.Adapter<RecordingsAdapter.Vi
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         DataCollectionItem item = dataCollectionItems.get(position);
-        // Assuming getCommandName and getCommandArgs methods are in your Message model
-        holder.commandName.setText(item.getMessage().getCommandName());
-        holder.commandArgs.setText(item.getMessage().getCommandArgs());
-        // Set other UI elements based on the recording and message details
+
+        if (item.getMessage() != null) {
+            holder.commandName.setText(item.getMessage().getCommandName());
+            holder.commandArgs.setText(item.getMessage().getCommandArgs());
+        } else {
+            holder.commandName.setText("No Command");
+            holder.commandArgs.setText("");
+        }
     }
 
     @Override

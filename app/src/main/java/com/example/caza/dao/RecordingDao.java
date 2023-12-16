@@ -17,4 +17,7 @@ public interface RecordingDao {
 
     @Delete
     void delete(Recording recording); // Method to delete a recording
+
+    @Query("SELECT * FROM recording WHERE id = :recordingId")
+    Recording getRecordingById(int recordingId);
 }

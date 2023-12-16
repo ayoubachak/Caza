@@ -17,4 +17,5 @@ public interface DataCollectionItemDao {
 
     @Delete
     void delete(DataCollectionItem dataCollectionItem);
+
 }
